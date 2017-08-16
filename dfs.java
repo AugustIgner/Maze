@@ -18,7 +18,7 @@ public class dfs
 		}
 		data.increaseMoves();
 
- 		//System.out.flush();
+
 		int walls = wallCount(robot);
 
 		if (walls == 3){
@@ -114,7 +114,7 @@ class Data{
 	public Point prevCord;
 	public static Image mouseImage=null;
 	public static Image catImage=null;
-	final static int cubeX = 5, cubeY = 5;
+	final static int cubeX = 25, cubeY = 25;
 	public static int moves;
 	public Stack<Point> stack;
 	public Stack<Integer> backtrack;
@@ -124,8 +124,8 @@ class Data{
 		stack = new Stack<Point>();
 		backtrack =new Stack<Integer>();
 		try{
-			mouseImage = ImageIO.read(new File("C:\\Users\\AI\\Documents\\java\\mouse.png"));
-			catImage = ImageIO.read(new File ("C:\\Users\\AI\\Documents\\java\\cat.png"));
+			mouseImage = ImageIO.read(new File(".\\mouse.png"));
+			catImage = ImageIO.read(new File (".\\cat.png"));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
