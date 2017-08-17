@@ -4,15 +4,16 @@ import java.io.*;
 import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import Node;
 
 public class bfs
 {
 	public Data data = new Data();
+	public int weight;
 
 	public void controlRobot(IRobot robot) {
 
 		if (robot.getRuns()==0 && Data.moves==0){
-			data.setStartLocation(robot);
 			data.setMazeData(robot.getMaze().getWidth(), robot.getMaze().getHeight());
 		}
 		data.increaseMoves();
@@ -22,6 +23,8 @@ public class bfs
 			robot.face(deadEnd(robot));
 		}else if(walls == 2){
 			robot.face(corridor(robot));
+		}else{
+			data.checkNode(IRobot robot);
 		}//FINISH
 
 		data.checkCell(robot);
@@ -29,6 +32,8 @@ public class bfs
 	}
 
 	public int corridor(IRobot robot){
+		weight++;
+		data.checkCell(robot);
 		if (robot.look(IRobot.AHEAD) == IRobot.WALL){
 			if (robot.look(IRobot.LEFT) == IRobot.WALL){
 				return IRobot.RIGHT;
@@ -81,53 +86,52 @@ public class bfs
 }
 
 class Data{
+	//Board data
 	private int x,y;
 	private int[][] board;
-	private int[][] nodes;
+
+//Node/move data
+	private ArrayList<Node> nodes;
+	private boolean[][] beenBefore;
 	public static int moves;
 
+//Graphics data
+	private JFrame window;
 	private Point prevCord;
 	private int prevState;
-
-	private JFrame window;
 	public static Image mouseImage=null;
 	public static Image catImage=null;
 	final static int cubeX = 5, cubeY = 5;
 
 
 	public Data(){
+		nodes = new ArrayList<Node>();
 		moves=0;
 		try{
-			mouseImage = ImageIO.read(new File("C:\\Users\\AI\\Documents\\java\\mouse.png"));
-			catImage = ImageIO.read(new File ("C:\\Users\\AI\\Documents\\java\\cat.png"));
+			mouseImage = ImageIO.read(new File(".\\mouse.png"));
+			catImage = ImageIO.read(new File (".\\cat.png"));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 	}
 
 	public void setMazeData(int x, int y){
+		//Initializing variables requiring maze dimentions.
 		this.x=x-2;
 		this.y=y-2;
 		board = new int[x-2][y-2];
-		visited = new boolean[x-2][y-2];
+		beenBefore = new boolean[x-2][y-2];
 
 		//Creating the frame.
 		window = new JFrame("Maze");
 		window.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		window.setBounds(0, 0, (this.x+2)*cubeX+15, (this.y+2)*cubeY+38);
 		window.setVisible(true);
-	}
 
-	public void setStartLocation(IRobot robot){
-		if (prevCord == null){
+		//Getting initial robot/goal locations
 			board[robot.getTargetLocation().x-1][robot.getTargetLocation().y-1]=4;
 			prevCord=robot.getLocation();
 			prevState=2;
-		}
-	}
-
-	public void checkNode(IRobot robot){
-
 	}
 
 	public void increaseMoves(){
@@ -141,13 +145,18 @@ class Data{
 		prevCord = new Point(1,1);
 	}
 
+	public void checkNode(IRobot robot){
+		if (beenBefore[robot.getLocation().x-1][robot.getLocation().y-1]){
+
+		}else{
+			beenBefore[robot.getLocation().x-1][robot.getLocation().y-1] = true;
+			nodes.add(new Node())
+		}
+	}
+
 	public void checkCell(IRobot robot){
 		updateMouse(robot);
-		if (nodes[robot.getLocation().x-1][robot.getLocation().y-1]==0){
-			return;
-		}else{
-			fillBoard(robot);
-		}
+		if (bfs.wallCount()>2)
 	}
 
 	public void updateMouse(IRobot robot){
@@ -156,25 +165,6 @@ class Data{
 		prevState = board[robot.getLocation().x-1][robot.getLocation().y-1];
 		board[robot.getLocation().x-1][robot.getLocation().y-1]=3;
 	}
-
-
-/*
-	Check if undiscovered.
-		if it is discovered check whether it is a node
-			if a node
-			Hello
-
-*/
-
-
-
-
-
-
-
-
-
-
 
 
 		//0 unexplored
@@ -191,9 +181,8 @@ class Data{
 			if (look(IRobot.NORTH,robot) == IRobot.WALL){
 				board[robot.getLocation().x-1][robot.getLocation().y-2] = 1;
 			}else{
-				if (walls >=2){
-					board[robot.getLocation().x-1][robot.getLocation().y-2] = 2;
-				/*}*/
+				board[robot.getLocation().x-1][robot.getLocation().y-2] = 2;
+				}
 			}
 		}
 
